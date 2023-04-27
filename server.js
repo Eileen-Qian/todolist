@@ -80,9 +80,27 @@ const requestListener = (req, res) => {
                 "data": todos,
             }));
             res.end();
-        }else{
+        } else {
             errorHandle(res)
         }
+    }
+    // 編輯待辦事項
+    else if (req.url.startsWith('/todos/') && req.method == 'PATCH') {
+        req.on('end', () => {
+            try {
+                const todo = JSON.parse(body).title; 
+                const id = req.url.split('/').pop();
+                const index = todos.findIndex(Element => Element.id == id)
+                if (todo !== undefined && index !== -1){
+                    todos[index].title = todo;
+                } else {
+                    errorHandle(res);
+                }
+                res.end();
+            } catch (error) {
+                errorHandle(res);
+            }
+        })
     }
     else if (req.method == "OPTIONS") {
         res.writeHead(200, headers);
